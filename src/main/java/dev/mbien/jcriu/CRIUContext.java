@@ -23,7 +23,8 @@ public final class CRIUContext implements AutoCloseable {
     
     private String logFile = "jcriu.log";
     private int logLevel = 4;
-    private boolean tcpEstablished = false;
+    private boolean tcpEstablished;
+    private boolean leaveRunning;
     
     private CRIUContext() {}
     
@@ -77,10 +78,10 @@ public final class CRIUContext implements AutoCloseable {
             criu_h.criu_set_log_file(logfile);
             
             criu_h.criu_set_shell_job(TRUE);
-            criu_h.criu_set_leave_running(TRUE);
+            criu_h.criu_set_leave_running(bool(leaveRunning));
 //            criu_h.criu_set_file_locks(TRUE);
 //            criu_h.criu_set_ext_unix_sk(TRUE);
-            criu_h.criu_set_tcp_established(tcpEstablished ? TRUE : FALSE);
+            criu_h.criu_set_tcp_established(bool(tcpEstablished));
 
             // image location
             try {
@@ -98,6 +99,10 @@ public final class CRIUContext implements AutoCloseable {
         }
         
     }
+
+    private byte bool(boolean b) {
+        return b ? TRUE : FALSE;
+    }
     
     private static interface CRIUAction {
         public int execute();
@@ -110,6 +115,11 @@ public final class CRIUContext implements AutoCloseable {
     
     public CRIUContext logLevel(int level) {
         this.logLevel = level;
+        return this;
+    }
+
+    public CRIUContext leaveRunning(boolean b) {
+        this.leaveRunning = b;
         return this;
     }
     
