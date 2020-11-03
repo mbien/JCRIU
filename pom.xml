@@ -13,6 +13,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+        
+    <licenses>
+        <license>
+          <name>MIT License</name>
+          <url>https://opensource.org/licenses/mit-license.php</url>
+        </license>
+    </licenses>
     
     <developers>
         <developer>
