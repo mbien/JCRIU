@@ -17,23 +17,14 @@ import static jdk.incubator.foreign.CLinker.*;
  *
  * @author mbien
  */
-public final class CRIUContext implements AutoCloseable {
+public final class CRIUContextImpl extends AbstractCRIUContext {
     
     private static final ReentrantLock lock = new ReentrantLock();
     
-    private String logFile = "jcriu.log";
-    private int logLevel = 4;
-    private boolean tcpEstablished;
-    private boolean leaveRunning;
+    CRIUContextImpl() {}
     
-    private CRIUContext() {}
     
-    public static CRIUContext create() {
-        CRIUContext context = new CRIUContext();
-        context.aquire();
-        return context;
-    }
-    
+    @Override
     public void aquire() {
         lock.lock();
         criu_h.criu_init_opts();
@@ -48,6 +39,7 @@ public final class CRIUContext implements AutoCloseable {
         }
     }
     
+    @Override
     public void dump(Path path) {
         
         criuAction(path, () -> {
@@ -56,6 +48,7 @@ public final class CRIUContext implements AutoCloseable {
         
     }
     
+    @Override
     public void restore(Path path) {
         
         criuAction(path, () -> {
@@ -77,7 +70,7 @@ public final class CRIUContext implements AutoCloseable {
             criu_h.criu_set_log_level(logLevel);
             criu_h.criu_set_log_file(logfile);
             
-            criu_h.criu_set_shell_job(TRUE);
+            criu_h.criu_set_shell_job(bool(shellJob));
             criu_h.criu_set_leave_running(bool(leaveRunning));
 //            criu_h.criu_set_file_locks(TRUE);
 //            criu_h.criu_set_ext_unix_sk(TRUE);
@@ -106,26 +99,6 @@ public final class CRIUContext implements AutoCloseable {
     
     private static interface CRIUAction {
         public int execute();
-    }
-    
-    public CRIUContext logFile(String file) {
-        this.logFile = file;
-        return this;
-    }
-    
-    public CRIUContext logLevel(int level) {
-        this.logLevel = level;
-        return this;
-    }
-
-    public CRIUContext leaveRunning(boolean b) {
-        this.leaveRunning = b;
-        return this;
-    }
-    
-    public CRIUContext tcpEstablished(boolean b) {
-        this.tcpEstablished = b;
-        return this;
     }
 
     // fcntl.h open(const char *__file, int __oflag, ...)
