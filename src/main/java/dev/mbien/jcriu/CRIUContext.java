@@ -6,7 +6,7 @@ import java.nio.file.Path;
  *
  * @author mbien
  */
-public abstract class AbstractCRIUContext implements AutoCloseable {
+public abstract class CRIUContext implements AutoCloseable {
 
     protected String logFile = "jcriu.log";
     protected int logLevel = 4;
@@ -14,8 +14,8 @@ public abstract class AbstractCRIUContext implements AutoCloseable {
     protected boolean leaveRunning;
     protected boolean shellJob;
     
-    public static AbstractCRIUContext create() {
-        AbstractCRIUContext context = new CRIUContextImpl();
+    public static CRIUContext create() {
+        CRIUContext context = new CRIUContextImpl();
 //        CRIUContext context = new CRIUContextFallback();
         context.aquire();
         return context;
@@ -30,27 +30,27 @@ public abstract class AbstractCRIUContext implements AutoCloseable {
     @Override
     public abstract void close();
     
-    public AbstractCRIUContext logFile(String file) {
+    public CRIUContext logFile(String file) {
         this.logFile = file;
         return this;
     }
     
-    public AbstractCRIUContext logLevel(int level) {
+    public CRIUContext logLevel(int level) {
         this.logLevel = level;
         return this;
     }
 
-    public AbstractCRIUContext leaveRunning(boolean b) {
+    public CRIUContext leaveRunning(boolean b) {
         this.leaveRunning = b;
         return this;
     }
     
-    public AbstractCRIUContext tcpEstablished(boolean b) {
+    public CRIUContext tcpEstablished(boolean b) {
         this.tcpEstablished = b;
         return this;
     }
     
-    public AbstractCRIUContext shellJob(boolean b) {
+    public CRIUContext shellJob(boolean b) {
         this.shellJob = b;
         return this;
     }

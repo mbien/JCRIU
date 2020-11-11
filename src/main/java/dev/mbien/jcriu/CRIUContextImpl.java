@@ -17,7 +17,7 @@ import static jdk.incubator.foreign.CLinker.*;
  *
  * @author mbien
  */
-public final class CRIUContextImpl extends AbstractCRIUContext {
+public final class CRIUContextImpl extends CRIUContext {
     
     private static final ReentrantLock lock = new ReentrantLock();
     
