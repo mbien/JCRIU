@@ -6,7 +6,7 @@ experimental java binding to [criu](https://github.com/checkpoint-restore/criu) 
     public static void main(String[] args) throws IOException {
 
         try(CRIUContext criu = CRIUContext.create()
-                .logFile("criu.log").logLevel(4).tcpEstablished(false).leaveRunning(false)) {
+                .logFile("criu.log").logLevel(INFO).tcpEstablished(false).leaveRunning(false)) {
 
             Path path = Paths.get("/tmp/freezer");
 
@@ -40,10 +40,10 @@ post dump/restore pid: 8845
 
 ## build
 1) run download-criu-header.sh once
-2) after that you can build it with 'mvn clean install' or your fav IDE.
+2) build project with 'mvn clean install' or your fav. IDE
 
 ## requirements
-+ early access Java 16 build with panama (for now)
++ early access [Java 16 panama build](https://jdk.java.net/panama/) (for now)
 + criu installed
 + recent linux kernel (if you experience 100% CPU usage after restore, try a different kernel)
 

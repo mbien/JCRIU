@@ -4,6 +4,7 @@
     
     <name>JCRIU</name>
     <description>Java Binding for the CRIU API</description>
+    <url>https://github.com/mbien/JCRIU/</url>
     
     <groupId>dev.mbien.jcriu</groupId>
     <artifactId>JCRIU</artifactId>
@@ -29,6 +30,12 @@
           <organizationUrl>https://mbien.dev</organizationUrl>
         </developer>
     </developers>
+        
+    <scm>
+        <connection>scm:git@github.com:mbien/JCRIU.git</connection>
+        <developerConnection>scm:git@github.com:mbien/JCRIU.git</developerConnection>
+        <url>https://github.com/mbien/JCRIU/</url>
+    </scm>
     
     <build>
         <plugins>
