@@ -90,11 +90,24 @@ public final class CRIUContextImpl extends CRIUContext {
             int ret = criu.execute();
             
             if(ret < 0) {
-                throw new CRIUException(ret, "criu action returned an error");
-            }        
+                throw new CRIUException(ret, "CRIU action returned an error");
+            }
         }
         
     }
+    
+    @Override
+    public String getVersion() {
+        int v = criu_h.criu_get_version();
+        int major = v/10000;
+        int minor = (v - major*10000) / 100;
+        int sub = v - (major*10000 + minor*100);
+        return major+"."+minor+"."+sub;
+    }
+    
+//    public String getAPIVersion() {
+//        return CLinker.toJavaString(criu_h.CRIU_VERSION());
+//    }
 
     private byte bool(boolean b) {
         return b ? TRUE : FALSE;

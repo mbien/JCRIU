@@ -31,6 +31,11 @@ public abstract class CRIUContext implements AutoCloseable {
     public abstract void dump(Path path) throws CRIUException;
 
     public abstract void restore(Path path) throws CRIUException;
+    
+    /**
+     * Returns the version String of the underlying CRIU implementation.
+     */
+    public abstract String getVersion();
 
     @Override
     public abstract void close();
