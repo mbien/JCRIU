@@ -59,15 +59,15 @@ public final class CRIUContextImpl extends CRIUContext {
     
     private void criuAction(Path path, CRIUAction criu) {
         
-        if(!Files.isDirectory(path)) {
-            throw new IllegalArgumentException("path '"+path+"' is not a folder");
+        if(!Files.isDirectory(path) || !Files.isReadable(path)) {
+            throw new IllegalArgumentException("'"+path+"' is not a directory or can't be accessed");
         }
         
-        try(MemorySegment freezer = CLinker.toCString(path.toString());
+        try(MemorySegment imageDir = CLinker.toCString(path.toString());
             MemorySegment logfile = CLinker.toCString(logFile)) {
 
             // options
-            criu_h.criu_set_log_level(logLevel);
+            criu_h.criu_set_log_level(logLevel.ordinal());
             criu_h.criu_set_log_file(logfile);
             
             criu_h.criu_set_shell_job(bool(shellJob));
@@ -78,10 +78,13 @@ public final class CRIUContextImpl extends CRIUContext {
 
             // image location
             try {
-                int fd = (int) open.invoke(freezer.address(), O_DIRECTORY);
+                int fd = (int) open.invoke(imageDir.address(), O_DIRECTORY);
+                if(fd < 0) {
+                    throw new RuntimeException("can't open image directory"); // should never happen
+                }
                 criu_h.criu_set_images_dir_fd(fd);
             } catch (Throwable t) {
-                throw new RuntimeException("can't create file handle for folder: " + path, t);
+                throw new RuntimeException("can't create file handle for directory: " + path, t);
             }
             
             int ret = criu.execute();
@@ -107,7 +110,7 @@ public final class CRIUContextImpl extends CRIUContext {
         MethodType.methodType(int.class, MemoryAddress.class, int.class),
         FunctionDescriptor.of(C_INT, C_POINTER, C_INT)
     );
-    private static final int O_DIRECTORY = 65536;
+    private static final int O_DIRECTORY = 0200000;
     
     private static final byte TRUE = (byte)1;
     private static final byte FALSE = (byte)0;

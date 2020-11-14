@@ -7,9 +7,14 @@ import java.nio.file.Path;
  * @author mbien
  */
 public abstract class CRIUContext implements AutoCloseable {
+    
+    /**
+     * Log level used for criu log files.
+     */
+    public enum LOG_LEVEL {OFF, ERROR, WARNING, INFO, DEBUG} // order matters: 0=off, 4=debug
 
     protected String logFile = "jcriu.log";
-    protected int logLevel = 4;
+    protected LOG_LEVEL logLevel = LOG_LEVEL.DEBUG;
     protected boolean tcpEstablished;
     protected boolean leaveRunning;
     protected boolean shellJob;
@@ -35,7 +40,7 @@ public abstract class CRIUContext implements AutoCloseable {
         return this;
     }
     
-    public CRIUContext logLevel(int level) {
+    public CRIUContext logLevel(LOG_LEVEL level) {
         this.logLevel = level;
         return this;
     }
@@ -54,4 +59,25 @@ public abstract class CRIUContext implements AutoCloseable {
         this.shellJob = b;
         return this;
     }
+
+    public String getLogFile() {
+        return logFile;
+    }
+
+    public LOG_LEVEL getLogLevel() {
+        return logLevel;
+    }
+
+    public boolean isTcpEstablished() {
+        return tcpEstablished;
+    }
+
+    public boolean isLeaveRunningEnabled() {
+        return leaveRunning;
+    }
+
+    public boolean isShellJobEnabled() {
+        return shellJob;
+    }
+    
 }
