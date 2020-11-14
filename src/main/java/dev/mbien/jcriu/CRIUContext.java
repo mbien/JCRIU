@@ -28,9 +28,9 @@ public abstract class CRIUContext implements AutoCloseable {
     
     public abstract void aquire();
 
-    public abstract void dump(Path path);
+    public abstract void dump(Path path) throws CRIUException;
 
-    public abstract void restore(Path path);
+    public abstract void restore(Path path) throws CRIUException;
 
     @Override
     public abstract void close();

@@ -40,7 +40,7 @@ public final class CRIUContextImpl extends CRIUContext {
     }
     
     @Override
-    public void dump(Path path) {
+    public void dump(Path path) throws CRIUException {
         
         criuAction(path, () -> {
             return criu_h.criu_dump();
@@ -49,7 +49,7 @@ public final class CRIUContextImpl extends CRIUContext {
     }
     
     @Override
-    public void restore(Path path) {
+    public void restore(Path path) throws CRIUException {
         
         criuAction(path, () -> {
             return criu_h.criu_restore();
@@ -57,7 +57,7 @@ public final class CRIUContextImpl extends CRIUContext {
         
     }
     
-    private void criuAction(Path path, CRIUAction criu) {
+    private void criuAction(Path path, CRIUAction criu) throws CRIUException {
         
         if(!Files.isDirectory(path) || !Files.isReadable(path)) {
             throw new IllegalArgumentException("'"+path+"' is not a directory or can't be accessed");
@@ -90,7 +90,7 @@ public final class CRIUContextImpl extends CRIUContext {
             int ret = criu.execute();
             
             if(ret < 0) {
-                throw new RuntimeException("criu error code: " + ret);
+                throw new CRIUException(ret, "criu action returned an error");
             }        
         }
         
