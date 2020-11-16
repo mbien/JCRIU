@@ -25,6 +25,12 @@ public final class CRIUContextImpl extends CRIUContext {
     
     CRIUContextImpl() {}
     
+    private static void init() {
+        if(!initialized) {
+            criu_h.criu_init_opts();
+            initialized = true;
+        }
+    }
     
     @Override
     public void close() {
@@ -41,9 +47,7 @@ public final class CRIUContextImpl extends CRIUContext {
     public void dump(Path path) throws CRIUException {
         lock.lock();
         try {
-            criuAction(path, () -> {
-                return criu_h.criu_dump();
-            });
+            criuAction(path, () -> criu_h.criu_dump());
         } finally {
             lock.unlock();
         }
@@ -53,9 +57,7 @@ public final class CRIUContextImpl extends CRIUContext {
     public void restore(Path path) throws CRIUException {
         lock.lock();
         try {
-            criuAction(path, () -> {
-                return criu_h.criu_restore();
-            });
+            criuAction(path, () -> criu_h.criu_restore());
         } finally {
             lock.unlock();
         }
@@ -63,10 +65,7 @@ public final class CRIUContextImpl extends CRIUContext {
     
     private void criuAction(Path path, CRIUAction action) throws CRIUException {
         
-        if(!initialized) {
-            criu_h.criu_init_opts();
-            initialized = true;
-        }
+        init();
 
         if(!Files.isDirectory(path) || !Files.isReadable(path)) {
             throw new IllegalArgumentException("'"+path+"' is not a directory or can't be accessed");
@@ -110,6 +109,7 @@ public final class CRIUContextImpl extends CRIUContext {
         int v;
         lock.lock();
         try {
+            init();
             v = criu_h.criu_get_version();
         } finally {
             lock.unlock();
