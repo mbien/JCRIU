@@ -9,7 +9,7 @@ import java.nio.file.Path;
 public abstract class CRIUContext implements AutoCloseable {
     
     /**
-     * Log level used for criu log files.
+     * Log level used for CRIU log files.
      */
     public enum LOG_LEVEL {OFF, ERROR, WARNING, INFO, DEBUG} // order matters: 0=off, 4=debug
 
@@ -23,8 +23,18 @@ public abstract class CRIUContext implements AutoCloseable {
         return new CRIUContextImpl();
     }
     
-    public abstract void dump(Path path) throws CRIUException;
+    /**
+     * Creates a checkpoint by dumping the state of this JVM into an image.
+     * @param path Path to the directory the image will be written to.
+     * @throws CRIUException When CRIU returns an error.
+     */
+    public abstract void checkpoint(Path path) throws CRIUException;
 
+    /**
+     * Restores a process from an image.
+     * @param path Path to the image directory.
+     * @throws CRIUException When CRIU returns an error.
+     */
     public abstract void restore(Path path) throws CRIUException;
     
     /**
@@ -32,6 +42,10 @@ public abstract class CRIUContext implements AutoCloseable {
      */
     public abstract String getVersion();
 
+    /**
+     * Releases all resources associated with this context.
+     * @see AutoCloseable
+     */
     @Override
     public abstract void close();
     

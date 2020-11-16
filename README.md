@@ -13,9 +13,9 @@ experimental java binding to [criu](https://github.com/checkpoint-restore/criu) 
             if(!Files.exists(path))
                 Files.createDirectory(path);
 
-            System.out.println("pre dump pid: "+ProcessHandle.current().pid());
-            criu.dump(path);
-            System.out.println("post dump/restore pid: "+ProcessHandle.current().pid());
+            System.out.println("pre checkpoint pid: "+ProcessHandle.current().pid());
+            criu.checkpoint(path);
+            System.out.println("post checkpoint/restore pid: "+ProcessHandle.current().pid());
 
         }
     }
@@ -28,13 +28,13 @@ $ sudo jdk-16-panama+2-193/bin/java -XX:-UsePerfData -Xmx42m -XX:+UseSerialGC\
  --enable-preview --add-modules jdk.incubator.foreign -Dforeign.restricted=permit\
  -cp test.jar:JCRIU-x.x-SNAPSHOT.jar foo.Test
 WARNING: Using incubator modules: jdk.incubator.foreign
-pre dump pid: 8845
+pre checkpoint pid: 8845
 ```
 
 2) restore from checkpoint
 ```bash
 $ sudo criu restore --shell-job -D /tmp/freezer/
-post dump/restore pid: 8845
+post checkpoint/restore pid: 8845
 
 ```
 

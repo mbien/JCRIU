@@ -14,7 +14,8 @@ import jdk.incubator.foreign.MemorySegment;
 import static jdk.incubator.foreign.CLinker.*;
 
 /**
- *
+ * Foreign function binding to the CRIU C-API.
+ * Communication over RPC.
  * @author mbien
  */
 public final class CRIUContextImpl extends CRIUContext {
@@ -44,7 +45,7 @@ public final class CRIUContextImpl extends CRIUContext {
     }
     
     @Override
-    public void dump(Path path) throws CRIUException {
+    public void checkpoint(Path path) throws CRIUException {
         lock.lock();
         try {
             criuAction(path, () -> criu_h.criu_dump());
