@@ -20,14 +20,9 @@ public abstract class CRIUContext implements AutoCloseable {
     protected boolean shellJob;
     
     public static CRIUContext create() {
-        CRIUContext context = new CRIUContextImpl();
-//        CRIUContext context = new CRIUContextFallback();
-        context.aquire();
-        return context;
+        return new CRIUContextImpl();
     }
     
-    public abstract void aquire();
-
     public abstract void dump(Path path) throws CRIUException;
 
     public abstract void restore(Path path) throws CRIUException;

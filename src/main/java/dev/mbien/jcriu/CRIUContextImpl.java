@@ -21,19 +21,17 @@ public final class CRIUContextImpl extends CRIUContext {
     
     private static final ReentrantLock lock = new ReentrantLock();
     
+    private static boolean initialized = false;
+    
     CRIUContextImpl() {}
     
     
     @Override
-    public void aquire() {
-        lock.lock();
-        criu_h.criu_init_opts();
-    }
-
-    @Override
     public void close() {
+        lock.lock();
         try {
             criu_h.criu_free_opts();
+            initialized = false;
         } finally {
             lock.unlock();
         }
@@ -41,24 +39,35 @@ public final class CRIUContextImpl extends CRIUContext {
     
     @Override
     public void dump(Path path) throws CRIUException {
-        
-        criuAction(path, () -> {
-            return criu_h.criu_dump();
-        });
-        
+        lock.lock();
+        try {
+            criuAction(path, () -> {
+                return criu_h.criu_dump();
+            });
+        } finally {
+            lock.unlock();
+        }
     }
     
     @Override
     public void restore(Path path) throws CRIUException {
-        
-        criuAction(path, () -> {
-            return criu_h.criu_restore();
-        });
-        
+        lock.lock();
+        try {
+            criuAction(path, () -> {
+                return criu_h.criu_restore();
+            });
+        } finally {
+            lock.unlock();
+        }
     }
     
-    private void criuAction(Path path, CRIUAction criu) throws CRIUException {
+    private void criuAction(Path path, CRIUAction action) throws CRIUException {
         
+        if(!initialized) {
+            criu_h.criu_init_opts();
+            initialized = true;
+        }
+
         if(!Files.isDirectory(path) || !Files.isReadable(path)) {
             throw new IllegalArgumentException("'"+path+"' is not a directory or can't be accessed");
         }
@@ -87,7 +96,7 @@ public final class CRIUContextImpl extends CRIUContext {
                 throw new RuntimeException("can't create file handle for directory: " + path, t);
             }
             
-            int ret = criu.execute();
+            int ret = action.execute();
             
             if(ret < 0) {
                 throw new CRIUException(ret, "CRIU action returned an error");
@@ -98,7 +107,13 @@ public final class CRIUContextImpl extends CRIUContext {
     
     @Override
     public String getVersion() {
-        int v = criu_h.criu_get_version();
+        int v;
+        lock.lock();
+        try {
+            v = criu_h.criu_get_version();
+        } finally {
+            lock.unlock();
+        }
         int major = v/10000;
         int minor = (v - major*10000) / 100;
         int sub = v - (major*10000 + minor*100);
