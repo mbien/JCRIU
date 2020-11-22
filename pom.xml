@@ -10,10 +10,6 @@
     <artifactId>JCRIU</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
         
     <licenses>
         <license>
@@ -37,8 +33,42 @@
         <url>https://github.com/mbien/JCRIU/</url>
     </scm>
     
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
+        <!-- paths for junit tests - use when criu is not installed locally or a different version should be used
+        <criu.path>/home/mbien/projects/criu/criu</criu.path>
+        <criu.lib.path>-Djava.library.path=/home/mbien/projects/criu/lib/c</criu.lib.path>
+        -->
+    </properties>
+    
+    <dependencies>
+        
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.7.0</version>
+            <scope>test</scope>
+        </dependency>
+        
+    </dependencies>
+    
     <build>
         <plugins>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M5</version>
+                <configuration>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <argLine>--enable-preview --add-modules jdk.incubator.foreign -Dforeign.restricted=permit ${criu.lib.path}</argLine>
+                    <environmentVariables>
+                       <PATH>${criu.path}</PATH>
+                    </environmentVariables>
+                </configuration>
+            </plugin>
             
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
