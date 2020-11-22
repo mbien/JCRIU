@@ -3,7 +3,20 @@ package dev.mbien.jcriu;
 import java.nio.file.Path;
 
 /**
- *
+ * Main entry point to the CRIU API.
+ * 
+ * <pre>{@code
+ * try (CRIUContext criu = CRIUContext.create().leaveRunning(true).shellJob(true)) {
+ *     criu.checkpoint(imagePath);
+ * } catch (CRIUException ex) { // CRIU errors are mapped to CRIUExceptions
+ *     ...
+ * }
+ * }</pre>
+ * 
+ * <p>All boolean flags are set to false by default, log level is set to WARNING.
+ * 
+ * <p>API is thread safe.
+ *  
  * @author mbien
  */
 public abstract class CRIUContext implements AutoCloseable {
@@ -14,7 +27,8 @@ public abstract class CRIUContext implements AutoCloseable {
     public enum LOG_LEVEL {OFF, ERROR, WARNING, INFO, DEBUG} // order matters: 0=off, 4=debug
 
     protected String logFile = "jcriu.log";
-    protected LOG_LEVEL logLevel = LOG_LEVEL.DEBUG;
+    protected LOG_LEVEL logLevel = LOG_LEVEL.WARNING;
+    
     protected boolean tcpEstablished;
     protected boolean leaveRunning;
     protected boolean shellJob;
