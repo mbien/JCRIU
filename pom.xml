@@ -122,6 +122,8 @@
                                 <argument>-lcriu</argument>
                                 <argument>-dtarget/generated-sources/panama</argument>
                                 <argument>--source</argument>
+                                <argument>--filter</argument> <!-- restrict to symbols in criu.h -->
+                                <argument>criu.h</argument>
                                 <argument>src/main/c/criu.h</argument>
                             </arguments>
                         </configuration>
