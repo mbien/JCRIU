@@ -43,9 +43,9 @@ post checkpoint/restore pid: 8845
 2) build project with 'mvn clean install' or your fav. IDE
 
 ## requirements
-+ early access [Java 16 panama build](https://jdk.java.net/panama/) (for now)
++ early access [Java 17 panama build](https://jdk.java.net/panama/)
 + criu installed
-+ recent linux kernel (if you experience 100% CPU usage after restore, try a different kernel)
++ recent linux kernel (e.g 5.10+) (if you experience 100% CPU usage after restore, try a different kernel)
 
 ## license
 This project is distributed under the MIT License, see LICENSE file.

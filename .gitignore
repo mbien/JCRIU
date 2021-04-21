@@ -1,4 +1,5 @@
 target
 nbactions.xml
 nb-configuration.xml
+/nbproject/
 src/main/c/criu.h
