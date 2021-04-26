@@ -28,7 +28,10 @@ public final class CRIUContextImpl extends CRIUContext {
     
     private static void init() {
         if(!initialized) {
-            criu_h.criu_init_opts();
+            int ret = criu_h.criu_init_opts();
+            if(ret != 0) {
+                throw new CRIUException(ret, "error during init");
+            }
             initialized = true;
         }
     }
