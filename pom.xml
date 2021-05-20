@@ -36,10 +36,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
-        <!-- paths for junit tests - use when criu is not installed locally or a different version should be used
-        <criu.path>/home/mbien/projects/criu/criu</criu.path>
-        <criu.lib.path>-Djava.library.path=/home/mbien/projects/criu/lib/c</criu.lib.path>
-        -->
+        <!-- paths for junit tests - use when criu is not installed locally or a different version should be used -->
+        <criu.path><!--/home/mbien/projects/criu/criu--></criu.path>
+        <criu.lib.path><!---Djava.library.path=/home/mbien/projects/criu/lib/c--></criu.lib.path>
     </properties>
     
     <dependencies>
@@ -47,7 +46,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.7.0</version>
+            <version>5.7.2</version>
             <scope>test</scope>
         </dependency>
         
@@ -63,7 +62,8 @@
                 <configuration>
                     <forkCount>1</forkCount>
                     <reuseForks>true</reuseForks>
-                    <argLine>--enable-preview --add-modules jdk.incubator.foreign -Dforeign.restricted=permit ${criu.lib.path}</argLine>
+                    <trimStackTrace>false</trimStackTrace>
+                    <argLine>--enable-preview --add-modules jdk.incubator.foreign --enable-native-access=ALL-UNNAMED ${criu.lib.path}</argLine>
                     <environmentVariables>
                        <PATH>${criu.path}</PATH>
                     </environmentVariables>
@@ -122,8 +122,6 @@
                                 <argument>-lcriu</argument>
                                 <argument>-dtarget/generated-sources/panama</argument>
                                 <argument>--source</argument>
-                                <argument>--filter</argument> <!-- restrict to symbols in criu.h -->
-                                <argument>criu.h</argument>
                                 <argument>src/main/c/criu.h</argument>
                             </arguments>
                         </configuration>

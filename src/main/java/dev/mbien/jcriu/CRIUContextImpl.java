@@ -7,9 +7,9 @@ import java.nio.file.Path;
 import java.util.concurrent.locks.ReentrantLock;
 import jdk.incubator.foreign.CLinker;
 import jdk.incubator.foreign.FunctionDescriptor;
-import jdk.incubator.foreign.LibraryLookup;
 import jdk.incubator.foreign.MemoryAddress;
 import jdk.incubator.foreign.MemorySegment;
+import jdk.incubator.foreign.ResourceScope;
 
 import static jdk.incubator.foreign.CLinker.*;
 
@@ -75,8 +75,10 @@ public final class CRIUContextImpl extends CRIUContext {
             throw new IllegalArgumentException("'"+path+"' is not a directory or can't be accessed");
         }
         
-        try(MemorySegment imageDir = CLinker.toCString(path.toString());
-            MemorySegment logfile = CLinker.toCString(logFile)) {
+        try(ResourceScope scope = ResourceScope.newConfinedScope()) {
+
+            MemorySegment logfile = CLinker.toCString(logFile, scope);
+            MemorySegment imageDir = CLinker.toCString(path.toString(), scope);
 
             // options
             criu_h.criu_set_log_level(logLevel.ordinal());
@@ -138,7 +140,7 @@ public final class CRIUContextImpl extends CRIUContext {
 
     // fcntl.h open(const char *__file, int __oflag, ...)
     private static final MethodHandle open = CLinker.getInstance().downcallHandle(
-        LibraryLookup.ofDefault().lookup("open").get(),
+        CLinker.systemLookup().lookup("open").get(),
         MethodType.methodType(int.class, MemoryAddress.class, int.class),
         FunctionDescriptor.of(C_INT, C_POINTER, C_INT)
     );

@@ -24,8 +24,8 @@ experimental java binding to [criu](https://github.com/checkpoint-restore/criu) 
 
 1) run above program (currently requires root permissions, but will hopefully change with CAP_CHECKPOINT_RESTORE)
 ```bash
-$ sudo jdk-16-panama+2-193/bin/java -XX:-UsePerfData -Xmx42m -XX:+UseSerialGC\
- --enable-preview --add-modules jdk.incubator.foreign -Dforeign.restricted=permit\
+$ sudo jdk-17-panama+3-167/bin/java -XX:-UsePerfData -Xmx42m -XX:+UseSerialGC\
+ --enable-preview --add-modules jdk.incubator.foreign --enable-native-access=ALL-UNNAMED\
  -cp test.jar:JCRIU-x.x-SNAPSHOT.jar foo.Test
 WARNING: Using incubator modules: jdk.incubator.foreign
 pre checkpoint pid: 8845
