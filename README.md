@@ -24,7 +24,7 @@ experimental java binding to [criu](https://github.com/checkpoint-restore/criu) 
 
 1) run above program (currently requires root permissions, but will hopefully change with CAP_CHECKPOINT_RESTORE)
 ```bash
-$ sudo jdk-17-panama+3-167/bin/java -XX:-UsePerfData -Xmx42m -XX:+UseSerialGC\
+$ sudo jdk-19-panama+1-13/bin/java -XX:-UsePerfData -Xmx42m -XX:+UseSerialGC\
  --enable-preview --add-modules jdk.incubator.foreign --enable-native-access=ALL-UNNAMED\
  -cp test.jar:JCRIU-x.x-SNAPSHOT.jar foo.Test
 WARNING: Using incubator modules: jdk.incubator.foreign
@@ -43,7 +43,7 @@ post checkpoint/restore pid: 8845
 2) build project with 'mvn clean install' or your fav. IDE
 
 ## requirements
-+ early access [Java 17 panama build](https://jdk.java.net/panama/)
++ early access [Java 19 panama build](https://jdk.java.net/panama/)
 + criu installed
 + recent linux kernel (e.g 5.10+) (if you experience 100% CPU usage after restore, try a different kernel)
 

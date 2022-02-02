@@ -1,17 +1,14 @@
 package dev.mbien.jcriu;
 
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodType;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.locks.ReentrantLock;
 import jdk.incubator.foreign.CLinker;
 import jdk.incubator.foreign.FunctionDescriptor;
-import jdk.incubator.foreign.MemoryAddress;
 import jdk.incubator.foreign.MemorySegment;
 import jdk.incubator.foreign.ResourceScope;
-
-import static jdk.incubator.foreign.CLinker.*;
+import jdk.incubator.foreign.SegmentAllocator;
 
 /**
  * Foreign function binding to the CRIU C-API.
@@ -77,18 +74,19 @@ public final class CRIUContextImpl extends CRIUContext {
         
         try(ResourceScope scope = ResourceScope.newConfinedScope()) {
 
-            MemorySegment logfile = CLinker.toCString(logFile, scope);
-            MemorySegment imageDir = CLinker.toCString(path.toString(), scope);
+            SegmentAllocator sa = SegmentAllocator.nativeAllocator(scope);
+            MemorySegment logfile = sa.allocateUtf8String(logFile);
+            MemorySegment imageDir = sa.allocateUtf8String(path.toString());
 
             // options
             criu_h.criu_set_log_level(logLevel.ordinal());
             criu_h.criu_set_log_file(logfile);
             
-            criu_h.criu_set_shell_job(bool(shellJob));
-            criu_h.criu_set_leave_running(bool(leaveRunning));
+            criu_h.criu_set_shell_job(shellJob);
+            criu_h.criu_set_leave_running(leaveRunning);
 //            criu_h.criu_set_file_locks(TRUE);
 //            criu_h.criu_set_ext_unix_sk(TRUE);
-            criu_h.criu_set_tcp_established(bool(tcpEstablished));
+            criu_h.criu_set_tcp_established(tcpEstablished);
 
             // image location
             try {
@@ -129,24 +127,16 @@ public final class CRIUContextImpl extends CRIUContext {
 //    public String getAPIVersion() {
 //        return CLinker.toJavaString(criu_h.CRIU_VERSION());
 //    }
-
-    private byte bool(boolean b) {
-        return b ? TRUE : FALSE;
-    }
     
     private static interface CRIUAction {
         public int execute();
     }
 
     // fcntl.h open(const char *__file, int __oflag, ...)
-    private static final MethodHandle open = CLinker.getInstance().downcallHandle(
-        CLinker.systemLookup().lookup("open").get(),
-        MethodType.methodType(int.class, MemoryAddress.class, int.class),
-        FunctionDescriptor.of(C_INT, C_POINTER, C_INT)
+    private static final MethodHandle open = CLinker.systemCLinker().downcallHandle(
+        CLinker.systemCLinker().lookup("open").get(),
+        FunctionDescriptor.of(criu_h.C_INT, criu_h.C_POINTER, criu_h.C_INT)
     );
     private static final int O_DIRECTORY = 0200000;
-    
-    private static final byte TRUE = (byte)1;
-    private static final byte FALSE = (byte)0;
     
 }
